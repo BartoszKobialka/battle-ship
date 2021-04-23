@@ -15,12 +15,12 @@ namespace BattleShip {
         }
 
         public Point getEndPoint() {
-            Point point = new Point(this.coords.x, this.coords.y);
+            Point point = new Point(this.coords);
             
-            if (direction == Direction.Horizontal)
-                point.x += length;
-            else if (direction == Direction.Vertical)
-                point.y += length;
+            if (this.direction == Direction.Horizontal)
+                point.x += this.length;
+            else if (this.direction == Direction.Vertical)
+                point.y += this.length;
 
             return point;
         }

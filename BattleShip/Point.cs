@@ -13,10 +13,14 @@ namespace BattleShip {
             this.y = y;
         }
 
+        public Point(Point other) {
+            this.x = other.x;
+            this.y = other.y;
+        }
+
         public Point() {
             this.x = new Random().Next(GameBoard.MaxIndex);
             this.y = new Random().Next(GameBoard.MaxIndex);
-            Console.WriteLine($"Random {x} {y}");
         }
     }
 }

@@ -17,8 +17,14 @@ namespace BattleShip {
 
         public GameBoard() {
             this.boardMatrix = this.GenerateBase();
-            //this.PlaceShips();
         }
+
+        private Dictionary<FieldType, char> FieldTypeToCharacters = new Dictionary<FieldType, char> {
+            {FieldType.Empty, '#'},
+            {FieldType.Ship, '='},
+            {FieldType.SunkenShip, 'X'},
+            {FieldType.MisHitted, 'O'},
+        };
 
         private List<List<BoardField>> GenerateBase() {
             List<List<BoardField>> matrix = new List<List<BoardField>>();
@@ -33,7 +39,7 @@ namespace BattleShip {
             return matrix;
         }
 
-        public void PlaceShips() {
+        public void FillBoard() {
             List<int> shipsLenght = new List<int> { 5, 4, 3, 2, 2, 1 };
 
             foreach (int length in shipsLenght) {
@@ -41,15 +47,16 @@ namespace BattleShip {
                 Ship ship = new Ship(length);
 
                 while (!placed) {
-                    ship.direction = (Direction)new Random().Next(1);
+                    ship.direction = (Direction)new Random().Next(2);
                     ship.coords = new Point();
 
-                    if (this.canBePlaced(ship))
+                    if (this.canBePlaced(ship)) {
+                        this.PlaceShip(ship);
                         placed = true;
+                    }
                 }
             }
         }
-
 
         public bool canBePlaced(Ship ship) {
             if (ship.direction == Direction.Horizontal) {
@@ -92,8 +99,41 @@ namespace BattleShip {
             return true;
         }
 
-        public void PlaceShip() {
+        public void PlaceShip(Ship ship) {
+            if (ship.direction == Direction.Horizontal) {
+                for (int i = ship.coords.x; i < ship.getEndPoint().x; i++) {
+                    this.boardMatrix[ship.coords.y][i].fieldType = FieldType.Ship;
+                }
+            } else {
+                for (int i = ship.coords.y; i < ship.getEndPoint().y; i++) {
+                    this.boardMatrix[i][ship.coords.x].fieldType = FieldType.Ship;
+                }
+            }
+        }
 
+        public int CountFieldsByType(FieldType type) {
+            int count = 0;
+
+            this.boardMatrix.ForEach(columnElement => {
+                columnElement.ForEach(rowElement => {
+                    if (rowElement.fieldType == type) count++;
+                });
+            });
+
+            return count;
+        }
+
+        public void SetFieldType(Point fieldCoords, FieldType type) {
+            this.boardMatrix[fieldCoords.x][fieldCoords.y].fieldType = type;
+        }
+        
+        public void PrintOnConsole() { 
+            for (int i = 0; i <= MaxIndex; i++) {
+                for (int j = 0; j <= MaxIndex; j++) {
+                    Console.Write(" " + FieldTypeToCharacters[boardMatrix[i][j].fieldType]);
+                }
+                Console.Write("\n");
+            }
         }
     }
 }
