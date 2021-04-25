@@ -15,6 +15,20 @@ namespace BattleShipTests {
             Assert.Equal(shipFieldAmount, gameBoard.CountFieldsByType(FieldType.Ship));
         }
 
+        [Fact]
+        public void TestIsShipSunken() {
+            GameBoard gameBoard = new GameBoard();
+            Ship ship = new Ship(2);
+            ship.direction = Direction.Horizontal;
+            ship.coords = new Point(1, 2);
+            gameBoard.PlaceShip(ship);
+            gameBoard.ships.Add(ship);
+            gameBoard.SetFieldType(new Point(1, 2), FieldType.SunkenShip);
+            gameBoard.SetFieldType(new Point(2, 2), FieldType.SunkenShip);
+
+            Assert.True(gameBoard.isShipSunken(new Point(2, 2)));
+        }
+
         [Theory, MemberData(nameof(TestCheckCanBePlacedData))]
         public void TestCheckCanBePlaced(int x, int y, int shipLength, Direction direction, bool expected) {
             GameBoard gameBoard = new GameBoard();

@@ -12,6 +12,7 @@ namespace BattleShip {
 
     public class GameBoard {
         public List<List<BoardField>> boardMatrix;
+        public List<Ship> ships = new List<Ship>();
 
         public static int MaxIndex { get => 9; }
 
@@ -32,7 +33,7 @@ namespace BattleShip {
             for (int i = 0; i <= MaxIndex; i++) {
                 matrix.Add(new List<BoardField>());
                 for (int j = 0; j <= MaxIndex; j++) {
-                    matrix[i].Add(new BoardField(i, j));
+                    matrix[i].Add(new BoardField(j, i));
                 }
             }
 
@@ -52,10 +53,37 @@ namespace BattleShip {
 
                     if (this.canBePlaced(ship)) {
                         this.PlaceShip(ship);
+                        this.ships.Add(ship);
                         placed = true;
                     }
                 }
             }
+        }
+
+        public bool isShipSunken(Point shipPoint) {
+            bool isSunken = false;
+
+            this.ships.ForEach(ship => {
+                if (ship.isShipContainPoint(shipPoint)) {
+                    int sunkenPartsCount = 0;
+
+                    if (ship.direction == Direction.Horizontal) {
+                        for (int i = ship.coords.x; i < ship.getEndPoint().x; i++) {
+                            if (this.boardMatrix[i][ship.coords.y].fieldType == FieldType.SunkenShip)
+                                sunkenPartsCount += 1;
+                        }
+                    } else {
+                        for (int i = ship.coords.y; i < ship.getEndPoint().y; i++) {
+                            if (this.boardMatrix[ship.coords.x][i].fieldType == FieldType.SunkenShip)
+                                sunkenPartsCount += 1;
+                        }
+                    }
+                    if (sunkenPartsCount == ship.length)
+                        isSunken = true;
+                }
+            });
+
+            return isSunken;
         }
 
         public bool canBePlaced(Ship ship) {
@@ -81,18 +109,19 @@ namespace BattleShip {
                 return true;
 
             for (int i = Math.Max(0, startX); i <= Math.Min(MaxIndex, endX); i++) {
-                if (this.boardMatrix[y][i].fieldType != FieldType.Empty)
+                if (this.boardMatrix[i][y].fieldType != FieldType.Empty)
                     return false;
             }
 
             return true;
         }
+
         public bool isColumClear(int startY, int endY, int x) {
             if (!Enumerable.Range(0, 10).Contains(x))
                 return true;
             
             for (int i = Math.Max(0, startY); i <= Math.Min(MaxIndex, endY); i++) {
-                if (this.boardMatrix[i][x].fieldType != FieldType.Empty)
+                if (this.boardMatrix[x][i].fieldType != FieldType.Empty)
                     return false;
             }
 
@@ -102,11 +131,11 @@ namespace BattleShip {
         public void PlaceShip(Ship ship) {
             if (ship.direction == Direction.Horizontal) {
                 for (int i = ship.coords.x; i < ship.getEndPoint().x; i++) {
-                    this.boardMatrix[ship.coords.y][i].fieldType = FieldType.Ship;
+                    this.boardMatrix[i][ship.coords.y].fieldType = FieldType.Ship;
                 }
             } else {
                 for (int i = ship.coords.y; i < ship.getEndPoint().y; i++) {
-                    this.boardMatrix[i][ship.coords.x].fieldType = FieldType.Ship;
+                    this.boardMatrix[ship.coords.x][i].fieldType = FieldType.Ship;
                 }
             }
         }
@@ -127,10 +156,19 @@ namespace BattleShip {
             this.boardMatrix[fieldCoords.x][fieldCoords.y].fieldType = type;
         }
         
-        public void PrintOnConsole() { 
+        public void PrintOnConsole() {
+            Console.Write("  ");
+
+            for (int j = 0; j <= MaxIndex; j++) {
+                Console.Write(" " + (j + 1));
+            }
+
+            Console.Write("\n");
+
             for (int i = 0; i <= MaxIndex; i++) {
+                Console.Write(((char)((int)'A' + i)) + " ");
                 for (int j = 0; j <= MaxIndex; j++) {
-                    Console.Write(" " + FieldTypeToCharacters[boardMatrix[i][j].fieldType]);
+                    Console.Write(" " + FieldTypeToCharacters[boardMatrix[j][i].fieldType]);
                 }
                 Console.Write("\n");
             }

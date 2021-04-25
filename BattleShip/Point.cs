@@ -22,5 +22,13 @@ namespace BattleShip {
             this.x = new Random().Next(GameBoard.MaxIndex);
             this.y = new Random().Next(GameBoard.MaxIndex);
         }
+
+        public static bool operator ==(Point pointOne, Point pointTwo) {
+            return pointOne.x == pointTwo.x && pointOne.y == pointTwo.y;
+        }
+
+        public static bool operator !=(Point pointOne, Point pointTwo) {
+            return pointOne.x != pointTwo.x || pointOne.y != pointTwo.y;
+        }
     }
 }

@@ -24,5 +24,21 @@ namespace BattleShip {
 
             return point;
         }
+
+        public bool isShipContainPoint(Point point) {
+            if (this.direction == Direction.Horizontal) {
+                for (int i = this.coords.x; i < this.getEndPoint().x; i++) {
+                    if (new Point(i, this.coords.y) == point) 
+                        return true;
+                }
+            } else {
+                for (int i = this.coords.y; i < this.getEndPoint().y; i++) {
+                    if (new Point(this.coords.x, i) == point)
+                        return true;
+                }
+            }
+
+            return false;
+        }
     }
 }

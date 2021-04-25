@@ -15,6 +15,5 @@ namespace BattleShip {
             this.y = y;
             this.fieldType = FieldType.Empty;
         }
-
     }
 }
